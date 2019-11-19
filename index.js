@@ -42,7 +42,7 @@ var map = new Map({
   layers: [rasterLayer, vectorLayer],
   target: document.getElementById('map'),
   view: new View({
-    center: fromLonLat([2.896372, 44.60240]),
-    zoom: 1
+    center: fromLonLat([2.3510768, 48.8567879]),
+    zoom: 12
   })
 });
