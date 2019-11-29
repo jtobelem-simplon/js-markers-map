@@ -1,0 +1,23 @@
+{
+  "ressourceName": "Locaux Simplon",
+  "markers": [
+    {
+      "id": 1,
+      "nom": "Local A",
+      "lat": 48.854474,
+      "lon": 2.435905
+    },
+    {
+      "id": 1,
+      "nom": "Local C",
+      "lat": 48.8620191,
+      "lon": 2.4362727
+    },
+    {
+      "id": 1,
+      "nom": "Lab",
+      "lat": 48.860537,
+      "lon": 2.410064
+    }
+  ]
+}

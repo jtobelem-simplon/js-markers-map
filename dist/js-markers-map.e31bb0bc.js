@@ -58882,10 +58882,22 @@ var _style = require("ol/style");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var myPlace1 = new _Feature.default({
-  geometry: new _Point.default((0, _proj.fromLonLat)([2.4262268, 48.853031]))
-});
-var myStyle = new _style.Style({
+var markersTableBody = document.getElementById('markers-table');
+console.log(markersTableBody);
+var requestURL = 'json/markers.json';
+var request = new XMLHttpRequest();
+request.open('GET', requestURL);
+request.responseType = 'text';
+request.send();
+
+request.onload = function () {
+  var markersText = '{"ressourceName": "Locaux Simplon","markers": [{"id": 1,"nom": "Local A","lat": 48.854474,"lon": 2.435905}]}';
+  console.log(markersText);
+  var markersJson = JSON.parse(markersText);
+  populateTable(markersJson);
+};
+
+var featureStyle = new _style.Style({
   image: new _style.Circle({
     radius: 7,
     fill: new _style.Fill({
@@ -58897,24 +58909,51 @@ var myStyle = new _style.Style({
     })
   })
 });
-myPlace1.setStyle(myStyle);
-var vectorSource = new _Vector.default({
-  features: [myPlace1]
-});
-var vectorLayer = new _layer.Vector({
-  source: vectorSource
-});
-var rasterLayer = new _layer.Tile({
-  source: new _OSM.default()
-});
-var map = new _Map.default({
-  layers: [rasterLayer, vectorLayer],
-  target: document.getElementById('map'),
-  view: new _View.default({
-    center: (0, _proj.fromLonLat)([2.3510768, 48.8567879]),
-    zoom: 12
-  })
-});
+
+function populateTable(jsonObj) {
+  var markers = jsonObj['markers'];
+  var features = [];
+
+  for (var i = 0; i < markers.length; i++) {
+    var tr = document.createElement('tr');
+    var th = document.createElement('th');
+    var td1 = document.createElement('td');
+    var td2 = document.createElement('td');
+    var td3 = document.createElement('td');
+    th.textContent = markers[i].id;
+    td1.textContent = markers[i].nom;
+    td2.textContent = markers[i].lat;
+    td3.textContent = markers[i].lon;
+    tr.appendChild(th);
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+    markersTableBody.appendChild(tr);
+    var place = new _Feature.default({
+      geometry: new _Point.default((0, _proj.fromLonLat)([markers[i].lon, markers[i].lat]))
+    });
+    place.setStyle(featureStyle);
+    features.push(place);
+  }
+
+  var vectorSource = new _Vector.default({
+    features: features
+  });
+  var vectorLayer = new _layer.Vector({
+    source: vectorSource
+  });
+  var rasterLayer = new _layer.Tile({
+    source: new _OSM.default()
+  });
+  var map = new _Map.default({
+    layers: [rasterLayer, vectorLayer],
+    target: document.getElementById('map'),
+    view: new _View.default({
+      center: (0, _proj.fromLonLat)([2.3510768, 48.8567879]),
+      zoom: 12
+    })
+  });
+}
 },{"ol/ol.css":"node_modules/ol/ol.css","ol/Feature":"node_modules/ol/Feature.js","ol/Map":"node_modules/ol/Map.js","ol/View":"node_modules/ol/View.js","ol/geom/Point":"node_modules/ol/geom/Point.js","ol/layer":"node_modules/ol/layer.js","ol/proj":"node_modules/ol/proj.js","ol/source/OSM":"node_modules/ol/source/OSM.js","ol/source/Vector":"node_modules/ol/source/Vector.js","ol/style":"node_modules/ol/style.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -58942,7 +58981,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "43845" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34695" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
