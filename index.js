@@ -51,6 +51,7 @@ function populateTable(jsonObj) {
     var td3 = document.createElement('td');
 
     th.textContent = markers[i].id;
+    th.setAttribute('scope','row');
     td1.textContent = markers[i].nom;
     td2.textContent = markers[i].lat;
     td3.textContent = markers[i].lon;
