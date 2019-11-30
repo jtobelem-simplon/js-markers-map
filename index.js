@@ -18,7 +18,7 @@ request.open('GET', requestURL);
 request.responseType = 'text';
 request.send();
 
-window.onload = function() {
+request.onload = function() {
   markersTableBody = document.getElementById("markers-table");
   console.log(markersTableBody)
   // var markersText = '{"ressourceName": "Locaux Simplon","markers": [{"id": 1,"nom": "Local A","lat": 48.854474,"lon": 2.435905}, {"id": 1,"nom": "Local C","lat": 48.8620191,"lon": 2.4362727}]}';
