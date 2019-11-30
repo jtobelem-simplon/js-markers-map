@@ -10,8 +10,7 @@ import VectorSource from 'ol/source/Vector';
 import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style';
 
 
-const markersTableBody = document.getElementById('markers-table');
-console.log(markersTableBody)
+var markersTableBody;
 
 var requestURL = 'json/markers.json';
 var request = new XMLHttpRequest();
@@ -20,7 +19,10 @@ request.responseType = 'text';
 request.send();
 
 request.onload = function() {
-  var markersText = '{"ressourceName": "Locaux Simplon","markers": [{"id": 1,"nom": "Local A","lat": 48.854474,"lon": 2.435905}]}';
+  markersTableBody = document.getElementById("markers-table");
+  console.log(markersTableBody)
+  // var markersText = '{"ressourceName": "Locaux Simplon","markers": [{"id": 1,"nom": "Local A","lat": 48.854474,"lon": 2.435905}]}';
+  var markersText = request.response
   console.log(markersText)
   var markersJson = JSON.parse(markersText);
   populateTable(markersJson);
