@@ -12,17 +12,17 @@ import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style';
 
 var markersTableBody;
 
-var requestURL = 'json/markers.json';
-var request = new XMLHttpRequest();
-request.open('GET', requestURL);
-request.responseType = 'text';
-request.send();
+// var requestURL = 'json/markers.json';
+// var request = new XMLHttpRequest();
+// request.open('GET', requestURL);
+// request.responseType = 'text';
+// request.send();
 
-request.onload = function() {
+window.onload = function() {
   markersTableBody = document.getElementById("markers-table");
   console.log(markersTableBody)
-  // var markersText = '{"ressourceName": "Locaux Simplon","markers": [{"id": 1,"nom": "Local A","lat": 48.854474,"lon": 2.435905}]}';
-  var markersText = request.response
+  var markersText = '{"ressourceName": "Locaux Simplon","markers": [{"id": 1,"nom": "Local A","lat": 48.854474,"lon": 2.435905}, {"id": 1,"nom": "Local C","lat": 48.8620191,"lon": 2.4362727}]}';
+  // var markersText = request.response
   console.log(markersText)
   var markersJson = JSON.parse(markersText);
   populateTable(markersJson);
