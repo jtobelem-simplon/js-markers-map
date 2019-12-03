@@ -58883,9 +58883,12 @@ var _style = require("ol/style");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var features = [];
-var map;
 var markerListJson = [];
 var currentIdx = 0;
+/**
+ * le style utilisé pour afficher les points
+ */
+
 var featureStyle = new _style.Style({
   image: new _style.Circle({
     radius: 7,
@@ -58898,6 +58901,25 @@ var featureStyle = new _style.Style({
     })
   })
 });
+/**
+ * le style utilisé pour afficher le milieu
+ */
+
+var midPointStyle = new _style.Style({
+  image: new _style.Circle({
+    radius: 7,
+    fill: new _style.Fill({
+      color: 'red'
+    }),
+    stroke: new _style.Stroke({
+      color: 'white',
+      width: 2
+    })
+  })
+});
+/**
+ * Crée une carte avec deux couches, osm (open street map) et une couche pour les points
+ */
 
 function initMap() {
   var vectorSource = new _Vector.default({
@@ -58920,24 +58942,27 @@ function initMap() {
 }
 
 ;
+/**
+ * Charge la liste de markers depuis le localStorage si elle existe, sinon charge le fichier json/markers.json
+ */
 
 function loadJson() {
   if (localStorage.getItem('markerList') != null) {
     markerListJson = JSON.parse(localStorage.getItem('markerList'));
-    populateTable();
+    remplirTable();
     initMap();
   } else {
     var requestURL = 'json/markers.json';
     var request = new XMLHttpRequest();
     request.open('GET', requestURL);
     request.responseType = 'text';
-    request.send();
+    request.send(); // action à réaliser lorsque le fichier à fini d'être chargé (action asynchrone)
 
     request.onload = function () {
       var markersText = request.response;
       markerListJson = JSON.parse(markersText);
       localStorage.setItem('markerList', JSON.stringify(markerListJson));
-      populateTable();
+      remplirTable();
       initMap();
     };
   }
@@ -58955,6 +58980,10 @@ window.onload = function () {
   loadJson();
   initButtonAction();
 };
+/**
+ * Crée un nouveau marker à partir du formulaire
+ */
+
 
 function ajouterMarker() {
   var marker = {
@@ -58966,6 +58995,10 @@ function ajouterMarker() {
   markerListJson['markers'].push(marker);
   localStorage.setItem('markerList', JSON.stringify(markerListJson));
 }
+/**
+ * Ajoute une ligne au tableau
+ */
+
 
 function creerLigne(id, nom, lat, lon) {
   var tr = document.createElement('tr');
@@ -58984,16 +59017,31 @@ function creerLigne(id, nom, lat, lon) {
   tr.appendChild(td3);
   document.getElementById("markers-table-body").appendChild(tr);
 }
+/**
+ * Ajoute un point sur la carte
+ */
 
-function creerPoint(lon, lat) {
+
+function creerPoint(lon, lat, isMidPoint) {
   var place = new _Feature.default({
     geometry: new _Point.default((0, _proj.fromLonLat)([lon, lat]))
   });
-  place.setStyle(featureStyle);
+  console.log(isMidPoint);
+
+  if (isMidPoint) {
+    place.setStyle(midPointStyle);
+  } else {
+    place.setStyle(featureStyle);
+  }
+
   features.push(place);
 }
+/**
+ * Parcourt la liste des markers pour remplir la table et la carte
+ */
 
-function populateTable() {
+
+function remplirTable() {
   var markers = markerListJson['markers'];
 
   for (var i = 0; i < markers.length; i++) {
@@ -59002,8 +59050,25 @@ function populateTable() {
     }
 
     creerLigne(markers[i].id, markers[i].nom, markers[i].lat, markers[i].lon);
-    creerPoint(markers[i].lon, markers[i].lat);
+    creerPoint(markers[i].lon, markers[i].lat, false);
   }
+
+  trouverMilieu();
+}
+
+function trouverMilieu() {
+  var markers = markerListJson['markers'];
+  var sumLon = 0;
+  var sumLat = 0;
+
+  for (var i = 0; i < markers.length; i++) {
+    sumLon = sumLon + Number(markers[i].lon);
+    sumLat = sumLat + Number(markers[i].lat);
+  }
+
+  var avgLon = sumLon / markers.length;
+  var avgLat = sumLat / markers.length;
+  creerPoint(avgLon, avgLat, true);
 }
 },{"ol/ol.css":"node_modules/ol/ol.css","ol/Feature":"node_modules/ol/Feature.js","ol/Map":"node_modules/ol/Map.js","ol/View":"node_modules/ol/View.js","ol/geom/Point":"node_modules/ol/geom/Point.js","ol/layer":"node_modules/ol/layer.js","ol/proj":"node_modules/ol/proj.js","ol/source/OSM":"node_modules/ol/source/OSM.js","ol/source/Vector":"node_modules/ol/source/Vector.js","ol/style":"node_modules/ol/style.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -59032,7 +59097,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "32975" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36201" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

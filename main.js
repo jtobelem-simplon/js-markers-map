@@ -27,6 +27,19 @@ const featureStyle = new Style({
 });
 
 /**
+ * le style utilisé pour afficher le milieu
+ */
+const midPointStyle = new Style({
+  image: new CircleStyle({
+    radius: 7,
+    fill: new Fill({ color: 'red' }),
+    stroke: new Stroke({
+      color: 'white', width: 2
+    })
+  })
+});
+
+/**
  * Crée une carte avec deux couches, osm (open street map) et une couche pour les points
  */
 function initMap() {
@@ -136,12 +149,20 @@ function creerLigne(id, nom, lat, lon) {
 /**
  * Ajoute un point sur la carte
  */
-function creerPoint(lon, lat) {
+function creerPoint(lon, lat, isMidPoint) {
   var place = new Feature({
     geometry: new Point(fromLonLat([lon, lat]))
   });
 
-  place.setStyle(featureStyle);
+  console.log(isMidPoint);
+
+  if (isMidPoint) {
+    place.setStyle(midPointStyle);
+  }
+  else {
+    place.setStyle(featureStyle);
+  }
+
   features.push(place);
 }
 
@@ -156,7 +177,28 @@ function remplirTable() {
       currentIdx = markers[i].id+1;
     }
     creerLigne(markers[i].id, markers[i].nom, markers[i].lat, markers[i].lon);
-    creerPoint(markers[i].lon, markers[i].lat);
+    creerPoint(markers[i].lon, markers[i].lat, false);
   }
+
+  trouverMilieu();
+
+}
+
+
+function trouverMilieu() {
+  var markers = markerListJson['markers'];
+  
+  var sumLon = 0;
+  var sumLat = 0;
+
+  for (var i = 0; i < markers.length; i++) {
+    sumLon = sumLon + Number(markers[i].lon);
+    sumLat = sumLat + Number(markers[i].lat);
+  }
+
+  var avgLon = sumLon/markers.length;
+  var avgLat = sumLat/markers.length;
+
+  creerPoint(avgLon, avgLat, true);
 
 }
