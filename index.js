@@ -10,10 +10,12 @@ import VectorSource from 'ol/source/Vector';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 
 var features = [];
-var map;
 var markerListJson = [];
 var currentIdx = 0;
 
+/**
+ * le style utilisé pour afficher les points
+ */
 const featureStyle = new Style({
   image: new CircleStyle({
     radius: 7,
@@ -24,7 +26,9 @@ const featureStyle = new Style({
   })
 });
 
-
+/**
+ * Crée une carte avec deux couches, osm (open street map) et une couche pour les points
+ */
 function initMap() {
   var vectorSource = new VectorSource({
     features: features
@@ -48,11 +52,14 @@ function initMap() {
   });
 };
 
+/**
+ * Charge la liste de markers depuis le localStorage si elle existe, sinon charge le fichier json/markers.json
+ */
 function loadJson() {
   if (localStorage.getItem('markerList') != null) {
     markerListJson = JSON.parse(localStorage.getItem('markerList'));
 
-    populateTable();
+    remplirTable();
     initMap();
   }
   else {
@@ -62,13 +69,14 @@ function loadJson() {
     request.responseType = 'text';
     request.send();
 
+    // action à réaliser lorsque le fichier à fini d'être chargé (action asynchrone)
     request.onload = function () {
       var markersText = request.response
       markerListJson = JSON.parse(markersText);
 
       localStorage.setItem('markerList', JSON.stringify(markerListJson));
 
-      populateTable();
+      remplirTable();
       initMap();
     }
 
@@ -77,12 +85,8 @@ function loadJson() {
 
 function initButtonAction() {
   document.getElementById('ajouter-point').addEventListener('click', function (event) {
-
     ajouterMarker()
-
-
   });
-
 }
 
 window.onload = function () {
@@ -90,6 +94,9 @@ window.onload = function () {
   initButtonAction();
 }
 
+/**
+ * Crée un nouveau marker à partir du formulaire
+ */
 function ajouterMarker() {
   const marker = {
     id: currentIdx++,
@@ -102,6 +109,9 @@ function ajouterMarker() {
   localStorage.setItem('markerList', JSON.stringify(markerListJson));
 }
 
+/**
+ * Ajoute une ligne au tableau
+ */
 function creerLigne(id, nom, lat, lon) {
   var tr = document.createElement('tr');
   var th = document.createElement('th');
@@ -123,6 +133,9 @@ function creerLigne(id, nom, lat, lon) {
   document.getElementById("markers-table-body").appendChild(tr);
 }
 
+/**
+ * Ajoute un point sur la carte
+ */
 function creerPoint(lon, lat) {
   var place = new Feature({
     geometry: new Point(fromLonLat([lon, lat]))
@@ -132,7 +145,10 @@ function creerPoint(lon, lat) {
   features.push(place);
 }
 
-function populateTable() {
+/**
+ * Parcourt la liste des markers pour remplir la table et la carte
+ */
+function remplirTable() {
   var markers = markerListJson['markers'];
 
   for (var i = 0; i < markers.length; i++) {
