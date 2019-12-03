@@ -3,93 +3,144 @@ import Feature from 'ol/Feature';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import Point from 'ol/geom/Point';
-import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
-import {fromLonLat} from 'ol/proj';
+import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
+import { fromLonLat } from 'ol/proj';
 import OSM from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
-import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style';
+import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 
+var features = [];
+var map;
+var markerListJson = [];
+var currentIdx = 0;
 
-var markersTableBody;
-
-var requestURL = 'json/markers.json';
-var request = new XMLHttpRequest();
-request.open('GET', requestURL);
-request.responseType = 'text';
-request.send();
-
-request.onload = function() {
-  markersTableBody = document.getElementById("markers-table");
-  console.log(markersTableBody)
-  // var markersText = '{"ressourceName": "Locaux Simplon","markers": [{"id": 1,"nom": "Local A","lat": 48.854474,"lon": 2.435905}, {"id": 1,"nom": "Local C","lat": 48.8620191,"lon": 2.4362727}]}';
-  var markersText = request.response
-  console.log(markersText)
-  var markersJson = JSON.parse(markersText);
-  populateTable(markersJson);
-}
-
-var featureStyle = new Style({
+const featureStyle = new Style({
   image: new CircleStyle({
     radius: 7,
-    fill: new Fill({color: 'black'}),
+    fill: new Fill({ color: 'black' }),
     stroke: new Stroke({
       color: 'white', width: 2
     })
   })
 });
 
-function populateTable(jsonObj) {
-  var markers = jsonObj['markers'];
-  var features = [];
 
-  for(var i = 0; i < markers.length; i++) {
+function initMap() {
+  var vectorSource = new VectorSource({
+    features: features
+  });
 
-    var tr = document.createElement('tr');
-    var th = document.createElement('th');
-    var td1 = document.createElement('td');
-    var td2 = document.createElement('td');
-    var td3 = document.createElement('td');
+  var vectorLayer = new VectorLayer({
+    source: vectorSource
+  });
 
-    th.textContent = markers[i].id;
-    th.setAttribute('scope','row');
-    td1.textContent = markers[i].nom;
-    td2.textContent = markers[i].lat;
-    td3.textContent = markers[i].lon;
-    
-    tr.appendChild(th);
-    tr.appendChild(td1);
-    tr.appendChild(td2);
-    tr.appendChild(td3);
+  var rasterLayer = new TileLayer({
+    source: new OSM()
+  });
 
-    markersTableBody.appendChild(tr);
-    
-    var place = new Feature({
-      geometry: new Point(fromLonLat([markers[i].lon, markers[i].lat]))
-    });
-    
-    place.setStyle(featureStyle);
-    features.push(place);
+  var map = new Map({
+    layers: [rasterLayer, vectorLayer],
+    target: document.getElementById('map'),
+    view: new View({
+      center: fromLonLat([2.3510768, 48.8567879]),
+      zoom: 12
+    })
+  });
+};
+
+function loadJson() {
+  if (localStorage.getItem('markerList') != null) {
+    markerListJson = JSON.parse(localStorage.getItem('markerList'));
+
+    populateTable();
+    initMap();
   }
- 
-var vectorSource = new VectorSource({
-  features: features
-});
+  else {
+    var requestURL = 'json/markers.json';
+    var request = new XMLHttpRequest();
+    request.open('GET', requestURL);
+    request.responseType = 'text';
+    request.send();
 
-var vectorLayer = new VectorLayer({
-  source: vectorSource
-});
+    request.onload = function () {
+      var markersText = request.response
+      markerListJson = JSON.parse(markersText);
 
-var rasterLayer = new TileLayer({
-  source: new OSM()
-});
+      localStorage.setItem('markerList', JSON.stringify(markerListJson));
 
-var map = new Map({
-  layers: [rasterLayer, vectorLayer],
-  target: document.getElementById('map'),
-  view: new View({
-    center: fromLonLat([2.3510768, 48.8567879]),
-    zoom: 12
-  })
-});
+      populateTable();
+      initMap();
+    }
+
+  }
+};
+
+function initButtonAction() {
+  document.getElementById('ajouter-point').addEventListener('click', function (event) {
+
+    ajouterMarker()
+
+
+  });
+
 }
 
+window.onload = function () {
+  loadJson();
+  initButtonAction();
+}
+
+function ajouterMarker() {
+  const marker = {
+    id: currentIdx++,
+    nom: document.getElementById("inputNom").value,
+    lat: document.getElementById("inputLat").value,
+    lon: document.getElementById("inputLon").value
+  }
+  markerListJson['markers'].push(marker);
+
+  localStorage.setItem('markerList', JSON.stringify(markerListJson));
+}
+
+function creerLigne(id, nom, lat, lon) {
+  var tr = document.createElement('tr');
+  var th = document.createElement('th');
+  var td1 = document.createElement('td');
+  var td2 = document.createElement('td');
+  var td3 = document.createElement('td');
+
+  th.textContent = id;
+  th.setAttribute('scope', 'row');
+  td1.textContent = nom;
+  td2.textContent = lat;
+  td3.textContent = lon;
+
+  tr.appendChild(th);
+  tr.appendChild(td1);
+  tr.appendChild(td2);
+  tr.appendChild(td3);
+
+  document.getElementById("markers-table-body").appendChild(tr);
+}
+
+function creerPoint(lon, lat) {
+  var place = new Feature({
+    geometry: new Point(fromLonLat([lon, lat]))
+  });
+
+  place.setStyle(featureStyle);
+  features.push(place);
+}
+
+function populateTable() {
+  var markers = markerListJson['markers'];
+
+  for (var i = 0; i < markers.length; i++) {
+    if (markers[i].id > currentIdx) {
+      currentIdx = markers[i].id+1;
+    }
+    creerLigne(markers[i].id, markers[i].nom, markers[i].lat, markers[i].lon);
+    creerPoint(markers[i].lon, markers[i].lat);
+  }
+
+}

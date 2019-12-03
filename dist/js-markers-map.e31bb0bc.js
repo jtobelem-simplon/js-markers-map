@@ -58882,21 +58882,10 @@ var _style = require("ol/style");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var markersTableBody = document.getElementById('markers-table');
-console.log(markersTableBody);
-var requestURL = 'json/markers.json';
-var request = new XMLHttpRequest();
-request.open('GET', requestURL);
-request.responseType = 'text';
-request.send();
-
-request.onload = function () {
-  var markersText = '{"ressourceName": "Locaux Simplon","markers": [{"id": 1,"nom": "Local A","lat": 48.854474,"lon": 2.435905}]}';
-  console.log(markersText);
-  var markersJson = JSON.parse(markersText);
-  populateTable(markersJson);
-};
-
+var features = [];
+var map;
+var markerListJson = [];
+var currentIdx = 0;
 var featureStyle = new _style.Style({
   image: new _style.Circle({
     radius: 7,
@@ -58910,32 +58899,7 @@ var featureStyle = new _style.Style({
   })
 });
 
-function populateTable(jsonObj) {
-  var markers = jsonObj['markers'];
-  var features = [];
-
-  for (var i = 0; i < markers.length; i++) {
-    var tr = document.createElement('tr');
-    var th = document.createElement('th');
-    var td1 = document.createElement('td');
-    var td2 = document.createElement('td');
-    var td3 = document.createElement('td');
-    th.textContent = markers[i].id;
-    td1.textContent = markers[i].nom;
-    td2.textContent = markers[i].lat;
-    td3.textContent = markers[i].lon;
-    tr.appendChild(th);
-    tr.appendChild(td1);
-    tr.appendChild(td2);
-    tr.appendChild(td3);
-    markersTableBody.appendChild(tr);
-    var place = new _Feature.default({
-      geometry: new _Point.default((0, _proj.fromLonLat)([markers[i].lon, markers[i].lat]))
-    });
-    place.setStyle(featureStyle);
-    features.push(place);
-  }
-
+function initMap() {
   var vectorSource = new _Vector.default({
     features: features
   });
@@ -58953,6 +58917,93 @@ function populateTable(jsonObj) {
       zoom: 12
     })
   });
+}
+
+;
+
+function loadJson() {
+  if (localStorage.getItem('markerList') != null) {
+    markerListJson = JSON.parse(localStorage.getItem('markerList'));
+    populateTable();
+    initMap();
+  } else {
+    var requestURL = 'json/markers.json';
+    var request = new XMLHttpRequest();
+    request.open('GET', requestURL);
+    request.responseType = 'text';
+    request.send();
+
+    request.onload = function () {
+      var markersText = request.response;
+      markerListJson = JSON.parse(markersText);
+      localStorage.setItem('markerList', JSON.stringify(markerListJson));
+      populateTable();
+      initMap();
+    };
+  }
+}
+
+;
+
+function initButtonAction() {
+  document.getElementById('ajouter-point').addEventListener('click', function (event) {
+    ajouterMarker();
+  });
+}
+
+window.onload = function () {
+  loadJson();
+  initButtonAction();
+};
+
+function ajouterMarker() {
+  var marker = {
+    id: currentIdx++,
+    nom: document.getElementById("inputNom").value,
+    lat: document.getElementById("inputLat").value,
+    lon: document.getElementById("inputLon").value
+  };
+  markerListJson['markers'].push(marker);
+  localStorage.setItem('markerList', JSON.stringify(markerListJson));
+}
+
+function creerLigne(id, nom, lat, lon) {
+  var tr = document.createElement('tr');
+  var th = document.createElement('th');
+  var td1 = document.createElement('td');
+  var td2 = document.createElement('td');
+  var td3 = document.createElement('td');
+  th.textContent = id;
+  th.setAttribute('scope', 'row');
+  td1.textContent = nom;
+  td2.textContent = lat;
+  td3.textContent = lon;
+  tr.appendChild(th);
+  tr.appendChild(td1);
+  tr.appendChild(td2);
+  tr.appendChild(td3);
+  document.getElementById("markers-table-body").appendChild(tr);
+}
+
+function creerPoint(lon, lat) {
+  var place = new _Feature.default({
+    geometry: new _Point.default((0, _proj.fromLonLat)([lon, lat]))
+  });
+  place.setStyle(featureStyle);
+  features.push(place);
+}
+
+function populateTable() {
+  var markers = markerListJson['markers'];
+
+  for (var i = 0; i < markers.length; i++) {
+    if (markers[i].id > currentIdx) {
+      currentIdx = markers[i].id + 1;
+    }
+
+    creerLigne(markers[i].id, markers[i].nom, markers[i].lat, markers[i].lon);
+    creerPoint(markers[i].lon, markers[i].lat);
+  }
 }
 },{"ol/ol.css":"node_modules/ol/ol.css","ol/Feature":"node_modules/ol/Feature.js","ol/Map":"node_modules/ol/Map.js","ol/View":"node_modules/ol/View.js","ol/geom/Point":"node_modules/ol/geom/Point.js","ol/layer":"node_modules/ol/layer.js","ol/proj":"node_modules/ol/proj.js","ol/source/OSM":"node_modules/ol/source/OSM.js","ol/source/Vector":"node_modules/ol/source/Vector.js","ol/style":"node_modules/ol/style.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -58981,7 +59032,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34695" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "32975" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

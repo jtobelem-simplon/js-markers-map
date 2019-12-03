@@ -6,7 +6,7 @@
   <style>
     .map {
       width: 100%;
-      height: 800px;
+      height: 400px;
     }
   </style>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -14,7 +14,7 @@
 </head>
 
 <body>
-  <div id="map" class="map"></div>
+
   <script src="index.js"></script>
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
     integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
@@ -26,21 +26,55 @@
     integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
     crossorigin="anonymous"></script>
 
+  <div class="container">
+    <div class="row">
+      <div class="col-sm">
 
-  <table id="markers-table" class="table table-hover">
-    <thead>
-      <tr>
-        <th scope="col">Id</th>
-        <th scope="col">Nom</th>
-        <th scope="col">Lat</th>
-        <th scope="col">Lon</th>
-      </tr>
-    </thead>
+        <section>
+          <div id="map" class="map" wi></div>
+        </section>
+      </div>
 
-    <tbody id="markers-table-body">
+      <div class="col-sm">
+        <section>
+          <table id="markers-table" class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Nom</th>
+                <th scope="col">Lat</th>
+                <th scope="col">Lon</th>
+              </tr>
+            </thead>
 
-    </tbody>
-  </table>
+            <tbody id="markers-table-body">
+
+            </tbody>
+          </table>
+        </section>
+      </div>
+    </div>
+
+    <div class="row">
+      <section>
+        <form class="form-inline">
+          <div class="form-group mx-sm-3 mb-2">
+            <label for="inputNom" class="sr-only">Nom</label>
+            <input type="text" class="form-control" id="inputNom" placeholder="Nom">
+          </div>
+          <div class="form-group mx-sm-3 mb-2">
+            <label for="inputLon" class="sr-only">Longitude</label>
+            <input type="number" step="0.0000001" class="form-control" id="inputLon" placeholder="2.3510768">
+          </div>
+          <div class="form-group mx-sm-3 mb-2">
+            <label for="inputLat" class="sr-only">Latitude</label>
+            <input type="number" step="0.0000001" class="form-control" id="inputLat" placeholder="48.8567879">
+          </div>
+          <button id="ajouter-point" type="submit" class="btn btn-primary mb-2">Ajouter un nouveau point</button>
+        </form>
+      </section>
+    </div>
+  </div>
 
 </body>
 
